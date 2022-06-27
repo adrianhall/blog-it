@@ -25,7 +25,11 @@ And a key of "abcdefghijklmnopqrstuvwxyz".
 
 Author entities are automatically added to the authors table on the first post/comment.
 
-The REST service has three endpoints:
+The REST service has four endpoints:
+
+api/token?userId={userId}
+=========================
+Gets a token for the given user.  The body of the response is the token.
 
 tables/author
 =============
@@ -37,11 +41,9 @@ Operations:
         Get a list of authors.
         Operations are standard OData operations ($filter, $skip, $top, etc.)
         Response is a LIST.
-
     GET tables/author/{id} (Anonymous)
         Gets a single author.
         Response is a model
-
     PUT tables/author/{id} (Owner)
         Updates the name, email, or photoUrl for the user.
         Response is the model.

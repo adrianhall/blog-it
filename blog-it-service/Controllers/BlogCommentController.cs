@@ -31,26 +31,12 @@ namespace Samples.BlogIt.Controllers
     ///     Deleted by the author.
     ///     Updates are explicitly denied.
     /// </summary>
-    public class BlogCommentAccessControlProvider : AccessControlProvider<BlogComment>
+    public class BlogCommentAccessControlProvider : AuthControlProvider<BlogComment>
     {
-        private readonly AppDbContext context;
-        private readonly IHttpContextAccessor httpContextAccessor;
-
         public BlogCommentAccessControlProvider(AppDbContext context, IHttpContextAccessor httpContextAccessor)
+            : base(context, httpContextAccessor)
         {
-            this.context = context;
-            this.httpContextAccessor = httpContextAccessor;
         }
-
-        /// <summary>
-        /// True if the user is authenticated; false otherwise.
-        /// </summary>
-        public bool IsAuthenticated { get => string.IsNullOrEmpty(UserId); }
-
-        /// <summary>
-        /// The userId of the connecting user, or null if anonymous.
-        /// </summary>
-        public string? UserId { get => httpContextAccessor.HttpContext?.User?.Identity?.Name; }
 
         /// <summary>
         /// Determines if the client is allowed to perform the <see cref="TableOperation"/> on
@@ -85,13 +71,7 @@ namespace Samples.BlogIt.Controllers
                 throw new BadRequestException("PostId does not exist", null);
             }
 
-            // Ensure that the current author is in the table.
-            var authorEntity = await context.BlogPosts.SingleOrDefaultAsync(m => m.Id == UserId, token).ConfigureAwait(false);
-            if (authorEntity == null)
-            {
-                BlogAuthor newAuthor = new() { Id = UserId, UpdatedAt = DateTimeOffset.UtcNow, Version = Guid.NewGuid().ToByteArray() };
-                await context.BlogAuthors.AddAsync(newAuthor, token).ConfigureAwait(false);
-            }
+            await EnsureAuthorCreatedAsync(token).ConfigureAwait(false);
 
             // Store the current userId in the entity as the author.
             if (operation == TableOperation.Create)
@@ -99,7 +79,6 @@ namespace Samples.BlogIt.Controllers
                 entity.AuthorId = UserId;
                 entity.CreatedAt = DateTimeOffset.UtcNow;
             }
-
 
             await base.PreCommitHookAsync(operation, entity, token);
         }

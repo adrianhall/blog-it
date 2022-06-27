@@ -22,19 +22,22 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(conn
 
 /*
  * Authentication and authorization
+ * Use JWT Authentication with the UserId claim being the name.
  */
-var tokenValidationParameters = new TokenValidationParameters
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
-    ValidateIssuer = true,
-    ValidateAudience = false,
-    ValidateLifetime = false,
-    ValidateIssuerSigningKey = true,
-    ValidIssuer = builder.Configuration["JwtToken:Issuer"],
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtToken:SecretKey"]))
-};
-builder.Services
-    .AddAuthentication(option => { option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; })
-    .AddJwtBearer(options => { options.TokenValidationParameters = tokenValidationParameters; });
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        NameClaimType = "UserId",
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]))
+    };
+});
 builder.Services.AddAuthorization();
 
 /*
@@ -61,6 +64,7 @@ using (var scope = app.Services.CreateScope())
 /*
  * Configure service pipeline.
  */
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

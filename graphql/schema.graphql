@@ -80,7 +80,7 @@ type AuthorConnection implements Connection {
   """
   The list of authors in this page of the response.
   """
-  authors: [Author]
+  authors: [Author!]!
   """
   An opaque token used to get the next set of results.
   """
@@ -124,7 +124,7 @@ type CommentConnection implements Connection {
   """
   The list of authors in this page of the response.
   """
-  comments: [Comment]
+  comments: [Comment!]!
   """
   An opaque token used to get the next set of results.
   """
@@ -158,7 +158,7 @@ type Post implements Node {
   """
   The comments for the blog post (with paging)
   """
-  comments(page: PageInputRequest): CommentConnection
+  comments(page: PageInputRequest): CommentConnection!
 }
 
 """
@@ -172,7 +172,7 @@ type PostConnection implements Connection {
   """
   The list of authors in this page of the response.
   """
-  posts: [Post]
+  posts: [Post!]!
   """
   An opaque token used to get the next set of results.
   """
@@ -227,13 +227,6 @@ input AddCommentInput {
 }
 
 """
-An input type for deleting a node.
-"""
-input DeleteNodeInput {
-  id: ID!
-}
-
-"""
 A result type returned when deletion occurs.
 """
 type DeleteResult {
@@ -245,24 +238,17 @@ type Mutation {
   """
   Add a blog post to the list of blog posts
   """
-  @subscribe(subscriptions: [ "newPosts" ])
-  addPost(post: AddPostInput): Post
+  addPost(post: AddPostInput!): Post
   """
   Delete a blog post from the list of blog posts
   """
-  deletePost(post: DeleteNodeInput): DeleteResult
+  deletePost(id: ID!): DeleteResult
   """
   Add a comment to a blog post
   """
-  @subscribe(subscriptions: [ "newComments" ])
-  addComment(comment: AddCommentInput): Comment
+  addComment(comment: AddCommentInput!): Comment
   """
   Delete a comment from the post
   """
-  deleteComment(comment: DeleteNodeInput): DeleteResult
-}
-
-type Subscription {
-  newPosts: Post
-  newComments(postId: ID!): Comment
+  deleteComment(id: ID!): DeleteResult
 }

@@ -1,0 +1,268 @@
+"""
+A custom type for providing a date/time reference in UTC with
+ms accuracy - normally specified via an ISO8601 string, or
+YYYY-MM-DD'T'HH:mm:ss.fff'Z'
+"""
+scalar UTCDateTime
+
+"""
+A custom type for representing an opaque token.  Should be modeled
+as an opaque string.
+"""
+scalar Token
+
+"""
+A base type for specifying a connection, which is a paged response
+from the service with an optional token to provide to the next page.
+"""
+interface Connection {
+  """
+  The number of items in the connection if paging were not taken into account.
+  """
+  count: Int
+  """
+  An opaque token used to get the next set of results.
+  """
+  nextToken: Token
+}
+
+"""
+A base type for specifying a node, which is a persisted object from
+the database.
+"""
+interface Node {
+  """
+  A globally-unique ID for this object.
+  """
+  id: ID!
+}
+
+"""
+An input type for providing a list of items.  You can either provide
+the skip/top (defaults to 0/max), or the nextToken - don't provide both.
+"""
+input PageInputRequest {
+  skip: Int
+  top: Int
+  nextToken: Token
+}
+
+"""
+A post or comment author.
+"""
+type Author implements Node {
+  """
+  A globally-unique ID for this object.
+  """
+  id: ID!
+  """
+  The display name for the author.
+  """
+  name: String!
+  """
+  The email address of the author.
+  """
+  email: String!
+  """
+  A URL for the users picture
+  """
+  photoUrl: URL
+}
+
+"""
+A paged list response for the known authors.
+"""
+type AuthorConnection implements Connection {
+  """
+  The number of authors in the result set, disregarding paging.
+  """
+  count: Int
+  """
+  The list of authors in this page of the response.
+  """
+  authors: [Author]
+  """
+  An opaque token used to get the next set of results.
+  """
+  nextToken: Token
+}
+
+"""
+A comment to a post.
+"""
+type Comment implements Node {
+  """
+  A globally-unique ID for this object.
+  """
+  id: ID!
+  """
+  The date/time stamp that this comment was created.
+  """
+  createdAt: UTCDateTime!
+  """
+  The post that this comment is attached to.
+  """
+  post: Post!
+  """
+  The author that wrote this comment.
+  """
+  author: Author!
+  """
+  The content for this comment.
+  """
+  content: String!
+}
+
+"""
+A paged response for a list of comments
+"""
+type CommentConnection implements Connection {
+  """
+  The number of authors in the result set, disregarding paging.
+  """
+  count: Int
+  """
+  The list of authors in this page of the response.
+  """
+  comments: [Comment]
+  """
+  An opaque token used to get the next set of results.
+  """
+  nextToken: Token
+}
+
+"""
+A blog post
+"""
+type Post implements Node {
+  """
+  A globally-unique ID for this object.
+  """
+  id: ID!
+  """
+  The date/time stamp that this comment was created.
+  """
+  createdAt: UTCDateTime!
+  """
+  The author that wrote the blog post.
+  """
+  author: Author!
+  """
+  The title of the blog post.
+  """
+  title: String!
+  """
+  The content of the blog post.
+  """
+  content: String!
+  """
+  The comments for the blog post (with paging)
+  """
+  comments(page: PageInputRequest): CommentConnection
+}
+
+"""
+A paged response for a list of posts
+"""
+type PostConnection implements Connection {
+  """
+  The number of authors in the result set, disregarding paging.
+  """
+  count: Int
+  """
+  The list of authors in this page of the response.
+  """
+  posts: [Post]
+  """
+  An opaque token used to get the next set of results.
+  """
+  nextToken: Token
+}
+
+type Query {
+  """
+  Get an ordered list of posts, starting with the most recent.
+  """
+  posts(page: PageInputRequest): PostConnection!
+  """
+  Get a single post by its ID
+  """
+  getPostById(id: ID!): Post
+  """
+  Get a single comment by its ID
+  """
+  getCommentById(id: ID!): Comment
+  """
+  Get a single author by his or her ID
+  """
+  getAuthorById(id: ID!): Author
+}
+
+"""
+An input type for adding a post.
+"""
+input AddPostInput {
+  """
+  The title of the post.
+  """
+  title: String!
+  """
+  The content of the post.
+  """
+  content: String!
+}
+
+"""
+An input type for adding a comment.
+"""
+input AddCommentInput {
+  """
+  The ID of the post that should be referenced.
+  """
+  postId: ID!
+  """
+  The content of the comment
+  """
+  content: String!
+}
+
+"""
+An input type for deleting a node.
+"""
+input DeleteNodeInput {
+  id: ID!
+}
+
+"""
+A result type returned when deletion occurs.
+"""
+type DeleteResult {
+  id: ID!
+  status: String
+}
+
+type Mutation {
+  """
+  Add a blog post to the list of blog posts
+  """
+  @subscribe(subscriptions: [ "newPosts" ])
+  addPost(post: AddPostInput): Post
+  """
+  Delete a blog post from the list of blog posts
+  """
+  deletePost(post: DeleteNodeInput): DeleteResult
+  """
+  Add a comment to a blog post
+  """
+  @subscribe(subscriptions: [ "newComments" ])
+  addComment(comment: AddCommentInput): Comment
+  """
+  Delete a comment from the post
+  """
+  deleteComment(comment: DeleteNodeInput): DeleteResult
+}
+
+type Subscription {
+  newPosts: Post
+  newComments(postId: ID!): Comment
+}

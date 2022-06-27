@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32611.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "blog-it-service", "blog-it-service\blog-it-service.csproj", "{B68834CF-D9AF-4230-906A-C784C4C65D73}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GraphQL", "GraphQL", "{A4E24369-051F-4FE6-9644-1592ED52FF2A}"
+	ProjectSection(SolutionItems) = preProject
+		graphql\rest-api.txt = graphql\rest-api.txt
+		graphql\schema.graphql = graphql\schema.graphql
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B68834CF-D9AF-4230-906A-C784C4C65D73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B68834CF-D9AF-4230-906A-C784C4C65D73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B68834CF-D9AF-4230-906A-C784C4C65D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B68834CF-D9AF-4230-906A-C784C4C65D73}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {84437E26-E875-4714-935A-7008FCA3CFEB}
+	EndGlobalSection
+EndGlobal

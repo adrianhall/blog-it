@@ -1,0 +1,89 @@
+List Response
+=============
+The LIST response is:
+
+{
+    "items": [
+        { /* each model */ },
+    ],
+    "count": <int>,
+    "nextLink": <url>
+}
+
+The count is only included if requested, and the nextLink is fully qualified.
+
+All REST service endpoints support standard conditional requests (If-Match, etc.) and require a ZUMO-API-VERSION: 3.0.0 header
+
+Authentication / Authorization
+==============================
+The service takes an optional Authorization header with Bearer {JWT}.  The JWT is a signed JWT with:
+
+* iss = https://blog-it-service.azure-api.net
+* sub = <user id for authors table>
+
+And a key of "abcdefghijklmnopqrstuvwxyz".
+
+Author entities are automatically added to the authors table on the first post/comment.
+
+The REST service has three endpoints:
+
+tables/author
+=============
+A list of the authors.  The id field is the only one that is guaranteed to be included.
+
+Operations:
+
+    GET tables/author (Anonymous)
+        Get a list of authors.
+        Operations are standard OData operations ($filter, $skip, $top, etc.)
+        Response is a LIST.
+
+    GET tables/author/{id} (Anonymous)
+        Gets a single author.
+        Response is a model
+
+    PUT tables/author/{id} (Owner)
+        Updates the name, email, or photoUrl for the user.
+        Response is the model.
+
+tables/post
+===========
+A list of the posts.  Each post has an authorId (into tables/author) and a createdAt property.
+
+Operations:
+
+    GET tables/post (Anonymous)
+        Get a list of posts
+        Operations are standard OData operations ($filter, $skip, $top, etc.)
+        Response is a LIST.
+    GET tables/post/{id} (Anonymous)
+        Gets a single post
+        Response is a model.
+    POST tables/post (Authenticated)
+        Creates a post from { "title": "my title", "content": "my content" }
+        Response is the final model (including author, etc.)
+    DELETE tables/post/{id} (Owner)
+        Deletes a post from the table.
+        Response is 204 Completed
+    
+tables/comment
+==============
+A list of comments. Each comment has a postId (into tables/post), an authorId (into tables/author), and a createdAt property.
+
+Operations:
+
+    GET tables/comment (Anonymous)
+        Get a list of comments
+        Operations are standard OData operations ($filter, $skip, $top, etc.)
+        Use $filter=(postId eq 'my-post-id') to get comments for a specific post.
+        Response is a LIST.
+    GET tables/comment/{id} (Anonymous)
+        Gets a single post
+        Response is a model.
+    POST tables/comment (Authenticated)
+        Creates a post from { "postId": "my-post-id", "content": "my content" }
+        my-post-id must exist.
+        Response is the final model (including author, etc.)
+    DELETE tables/comment/{id} (Owner)
+        Deletes a post from the table.
+        Response is 204 Completed

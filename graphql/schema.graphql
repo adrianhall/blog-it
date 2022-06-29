@@ -3,13 +3,18 @@ A custom type for providing a date/time reference in UTC with
 ms accuracy - normally specified via an ISO8601 string, or
 YYYY-MM-DD'T'HH:mm:ss.fff'Z'
 """
-scalar UTCDateTime
+scalar UTCDateTime @specifiedBy(url: "https://tools.ietf.org/html/rfc3339")
 
 """
 A custom type for representing an opaque token.  Should be modeled
 as an opaque string.
 """
 scalar Token
+
+"""
+A custom type for representing a URL
+"""
+scalar URL @specifiedBy(url: "https://tools.ietf.org/html/rfc3986")
 
 """
 A base type for specifying a connection, which is a paged response

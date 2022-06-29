@@ -1,0 +1,16 @@
+<fragment>
+    <set-graphql-resolver parent-type="Comment" field="post">
+        <http-data-source>
+            <http-request>
+                <set-method>GET</set-method>
+                <set-url>{{ blogitservice }}/tables/post/@{ 
+                    var args = context.ParentResult.AsJObject()["postId"].ToString();
+                    return args["id"]; 
+                }</set-url>
+                <set-header name="ZUMO-API-VERSION" exists-action="override">
+                    <value>3.0.0</value>
+                </set-header>
+            </http-request>
+        </http-data-source>
+    </set-graphql-resolver>
+</fragment>

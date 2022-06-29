@@ -1,0 +1,17 @@
+<fragment>
+    <set-graphql-resolver parent-type="Mutation" field="addComment">
+        <http-data-source>
+            <http-request>
+                <set-method>POST</set-method>
+                <set-url>{{ blogitservice }}/tables/post</set-url>
+                <set-body>@{
+                    var args = context.Request.Body.As<JObject>(true)["arguments"];
+                    return args["comment"].ToString();
+                }</set-body>
+                <set-header name="ZUMO-API-VERSION" exists-action="override">
+                    <value>3.0.0</value>
+                </set-header>
+            </http-request>
+        </http-data-source>
+    </set-graphql-resolver>
+</fragment>

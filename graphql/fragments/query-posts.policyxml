@@ -1,0 +1,47 @@
+<fragment>
+    <set-graphql-resolver parent-type="Query" field="posts">
+        <http-data-source>
+            <http-request>
+                <set-method>GET</set-method>
+                <set-url>{{ blogitservice }}/tables/post@{
+                    var args = context.Request.Body.As<JObject>(true)["arguments"];
+                    if (args.ContainsKey("page")) 
+                    {
+                        var page = args["page"];
+                        if (page.ContainsKey("nextToken")) {
+                            return "?" + page["nextToken"];
+                        } else if (page.ContainsKey("skip") || page.ContainsKey("top")) {
+                            var qs = new List<string>();
+                            if (page.ContainsKey("skip")) {
+                                qs.Add("$skip=" + page["skip"].ToString());
+                            }
+                            if (page.ContainsKey("top")) {
+                                qs.Add("$top=" + page["top"].ToString());
+                            }
+                            return "?" + string.Join('&', qs);
+                        }
+                    }   
+                    return "";
+                }</set-url>
+                <set-header name="ZUMO-API-VERSION" exists-action="override">
+                    <value>3.0.0</value>
+                </set-header>
+            </http-request>
+            <http-response>
+                <set-body>@{
+                    var result = new JObject();
+                    var response = context.Response.Body.As<JObject>(true);
+                    if (response.ContainsKey("count")) {
+                        result.Add("count", response["count"]);
+                    }
+                    result.Add("posts", response["items"]);
+                    if (response.ContainsKey("nextLink")) {
+                        var uri = new Uri(response["nextLink"].ToString());
+                        result.Add("nextToken", new JValue(uri.Query));
+                    }
+                    return result.ToString();
+                }</set-body>
+            </http-response>
+        </http-data-source>
+    </set-graphql-resolver>
+</fragment>

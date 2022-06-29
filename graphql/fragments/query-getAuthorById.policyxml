@@ -1,0 +1,16 @@
+<fragment>
+    <set-graphql-resolver parent-type="Query" field="getAuthorById">
+        <http-data-source>
+            <http-request>
+                <set-method>GET</set-method>
+                <set-url>{{ blogitservice }}/tables/author/@{ 
+                    var args = context.Request.Body.As<JObject>(true)["arguments"];
+                    return args["id"]; 
+                }</set-url>
+                <set-header name="ZUMO-API-VERSION" exists-action="override">
+                    <value>3.0.0</value>
+                </set-header>
+            </http-request>
+        </http-data-source>
+    </set-graphql-resolver>
+</fragment>

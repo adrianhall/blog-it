@@ -1,0 +1,29 @@
+<policies>
+    <inbound>
+        <base />
+        <validate-graphql-request max-depth="6" max-size="128000">
+            <authorize>
+                <!-- You must be authenticated to use mutations - this is set earlier on in the inbound policy -->
+                <rule path="/Mutation/*" action="@(context.Variables.GetValueOrDefault<string>("userId", "") != "" ? "allow" : "reject")"/>
+            </authorize>
+        </validate-graphql-request>
+    </inbound>
+    <backend>
+        <include-fragment fragment-id="query-posts-resolver"/>
+        <include-fragment fragment-id="query-getpostbyid-resolver"/>
+        <include-fragment fragment-id="query-getcommentbyid-resolver"/>
+        <include-fragment fragment-id="query-getauthorbyid-resolver"/>
+        <include-fragment fragment-id="mutation-addpost-resolver"/>
+        <include-fragment fragment-id="mutation-deletepost-resolver"/>
+        <include-fragment fragment-id="mutation-addcomment-resolver"/>
+        <include-fragment fragment-id="mutation-deletecomment-resolver"/>
+        <include-fragment fragment-id="post-comment-resolver"/>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

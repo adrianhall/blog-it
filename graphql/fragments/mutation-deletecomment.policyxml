@@ -3,10 +3,7 @@
         <http-data-source>
             <http-request>
                 <set-method>DELETE</set-method>
-                <set-url>{{ blogitservice }}/tables/comment/@{ 
-                    var args = context.Request.Body.As<JObject>(true)["arguments"];
-                    return args["id"]; 
-                }</set-url>
+                <set-url>@($"{{blogitservice}}/tables/comment/{context.Request.Body.As<JObject>(true)["arguments"]["id"]}")</set-url>
                 <set-header name="ZUMO-API-VERSION" exists-action="override">
                     <value>3.0.0</value>
                 </set-header>
@@ -16,6 +13,7 @@
                     var result = new JObject();
                     result.Add("id", context.Request.Body.As<JObject>(true)["arguments"]["id"]);
                     result.Add("status", new JValue(context.Response.StatusReason));
+                    return result.ToString();
                 }</set-body>
             </http-response>
         </http-data-source>

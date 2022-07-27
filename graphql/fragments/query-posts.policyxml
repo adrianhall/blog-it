@@ -3,13 +3,14 @@
         <http-data-source>
             <http-request>
                 <set-method>GET</set-method>
-                <set-url>{{ blogitservice }}/tables/post@{
-                    var args = context.Request.Body.As<JObject>(true)["arguments"];
+                <set-url>@{
+                    var args = context.Request.Body.As<JObject>(true)["arguments"] as JObject;
+                    var baseUri = $"{{blogitservice}}/tables/post";
                     if (args.ContainsKey("page")) 
                     {
-                        var page = args["page"];
+                        var page = args["page"] as JObject;
                         if (page.ContainsKey("nextToken")) {
-                            return "?" + page["nextToken"];
+                            return $"{baseUri}?{page["nextToken"]}";
                         } else if (page.ContainsKey("skip") || page.ContainsKey("top")) {
                             var qs = new List<string>();
                             if (page.ContainsKey("skip")) {
@@ -18,10 +19,10 @@
                             if (page.ContainsKey("top")) {
                                 qs.Add("$top=" + page["top"].ToString());
                             }
-                            return "?" + string.Join('&', qs);
+                            return $"{baseUri}?{string.Join("&", qs)}";
                         }
                     }   
-                    return "";
+                    return baseUri;
                 }</set-url>
                 <set-header name="ZUMO-API-VERSION" exists-action="override">
                     <value>3.0.0</value>

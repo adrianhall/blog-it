@@ -58,9 +58,33 @@ Operations:
         Get a list of posts
         Operations are standard OData operations ($filter, $skip, $top, etc.)
         Response is a LIST.
+
+        {
+            "count": 5,
+            "items": [
+                { 
+                    "id": 1, 
+                    "createdAt": "2022-12-04T13:40:00.000Z", 
+                    "authorId": 2, 
+                    "title": "My Title", 
+                    "content": "my content" 
+                }
+            ],
+            "nextLink": "https://....?...."
+        }
+
     GET tables/post/{id} (Anonymous)
         Gets a single post
         Response is a model.
+
+        { 
+            "id": 1, 
+            "createdAt": "2022-12-04T13:40:00.000Z", 
+            "authorId": 2, 
+            "title": "My Title", 
+            "content": "my content" 
+        }
+
     POST tables/post (Authenticated)
         Creates a post from { "title": "my title", "content": "my content" }
         Response is the final model (including author, etc.)
@@ -79,6 +103,21 @@ Operations:
         Operations are standard OData operations ($filter, $skip, $top, etc.)
         Use $filter=(postId eq 'my-post-id') to get comments for a specific post.
         Response is a LIST.
+
+        {
+            "count": 5,
+            "items": [
+                { 
+                    "id": 31,
+                    "postId": 1, 
+                    "createdAt": "2022-12-04T13:40:00.000Z", 
+                    "authorId": 2,  
+                    "content": "my content" 
+                }
+            ],
+            "nextLink": "https://....?...."
+        }
+
     GET tables/comment/{id} (Anonymous)
         Gets a single post
         Response is a model.

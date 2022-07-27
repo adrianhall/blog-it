@@ -3,18 +3,20 @@
         <http-data-source>
             <http-request>
                 <set-method>GET</set-method>
-                <set-url>{{ blogitservice }}/tables/comment@{
-                    var args = context.Request.Body.As<JObject>(true)["arguments"];
+                <set-url>@{
+                    var args = context.Request.Body.As<JObject>(true)["arguments"] as JObject;
+                    var baseUri = $"{{blogitservice}}/tables/comment";
                     if (args.ContainsKey("page")) {
-                        var page = args["page"];
+                        var page = args["page"] as JObject;
                         if (page.ContainsKey("nextToken")) {
-                            return "?" + page["nextToken"];
+                            return $"{baseUri}?{page["nextToken"]}";
                         }
                     }
 
                     var qs = new List<string>();
                     qs.Add("$filter=(postId eq '" + context.ParentResult.AsJObject()["id"].ToString() + "')");
                     if (args.ContainsKey("page")) {
+                        var page = args["page"] as JObject;
                         if (page.ContainsKey("skip")) {
                             qs.Add("$skip=" + page["skip"].ToString());
                         }
@@ -22,7 +24,7 @@
                             qs.Add("$top=" + page["top"].ToString());
                         }
                     }
-                    return "?" + string.Join('&', qs);
+                    return $"{baseUri}?{string.Join("&", qs)}";
                 }</set-url>
                 <set-header name="ZUMO-API-VERSION" exists-action="override">
                     <value>3.0.0</value>
@@ -35,7 +37,7 @@
                     if (response.ContainsKey("count")) {
                         result.Add("count", response["count"]);
                     }
-                    resultAdd("comments", response["items"]);
+                    result.Add("comments", response["items"]);
                     if (response.ContainsKey("nextLink")) {
                         var uri = new Uri(response["nextLink"].ToString());
                         result.Add("nextToken", new JValue(uri.Query));

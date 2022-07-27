@@ -9,17 +9,18 @@
         </validate-graphql-request>
     </inbound>
     <backend>
-        <include-fragment fragment-id="query-posts-resolver"/>
-        <include-fragment fragment-id="query-getpostbyid-resolver"/>
-        <include-fragment fragment-id="query-getcommentbyid-resolver"/>
-        <include-fragment fragment-id="query-getauthorbyid-resolver"/>
+        <include-fragment fragment-id="comment-author-resolver"/>
+        <include-fragment fragment-id="comment-post-resolver"/>
         <include-fragment fragment-id="mutation-addpost-resolver"/>
         <include-fragment fragment-id="mutation-deletepost-resolver"/>
         <include-fragment fragment-id="mutation-addcomment-resolver"/>
         <include-fragment fragment-id="mutation-deletecomment-resolver"/>
-        <include-fragment fragment-id="comment-author-resolver"/>
-        <include-fragment fragment-id="comment-post-resolver"/>
-        <include-fragment fragment-id="post-comment-resolver"/>
+        <include-fragment fragment-id="post-author-resolver"/>
+        <include-fragment fragment-id="post-comments-resolver"/>
+        <include-fragment fragment-id="query-getauthorbyid-resolver"/>
+        <include-fragment fragment-id="query-getcommentbyid-resolver"/>
+        <include-fragment fragment-id="query-getpostbyid-resolver"/>
+        <include-fragment fragment-id="query-posts-resolver"/>
         <base />
     </backend>
     <outbound>
